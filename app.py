@@ -6,7 +6,7 @@ import pandas as pd
 # Configuração da página
 st.set_page_config(page_title="Torneio RS/SC Vôlei", page_icon="🏐", layout="wide")
 
-# Inicialização do banco de dados temporário
+# Inicialização
 if 'times' not in st.session_state:
     st.session_state.times = []
 if 'chaves' not in st.session_state:
@@ -29,28 +29,20 @@ with st.sidebar:
                 st.session_state.times.append(novo_time)
                 st.rerun()
     else:
-        if senha != "":
-            st.error("Senha incorreta")
         st.info("Visualização Pública")
 
-# --- CRIAÇÃO DAS ABAS ---
+# --- ABAS ---
 aba1, aba2, aba3 = st.tabs(["📜 Regulamento Detalhado", "📊 Grupos & Confrontos", "🏆 Mata-Mata"])
 
 with aba1:
     st.header("Regulamento Oficial")
     st.markdown("""
     ### 1. DA ORGANIZAÇÃO
-    O I Torneio RS/SC de Vôlei é organizado por **Cristiano Delfino**, visando a integração entre atletas dos estados do Rio Grande do Sul e Santa Catarina.
-
+    O I Torneio RS/SC de Vôlei é organizado por **Cristiano Delfino**.
     ### 2. DAS EQUIPES E ATLETAS
-    * Cada equipe deve inscrever no mínimo 6 e no máximo 12 atletas.
-    * O torneio é de categoria **Mista**. É obrigatória a presença de pelo menos 2 mulheres em quadra.
-    * Uniformização: É recomendado o uso de camisetas da mesma cor.
-
+    * Mínimo 6 e máximo 12 atletas por equipe. Categoria Mista (mínimo 2 mulheres).
     ### 3. DO SISTEMA DE DISPUTA
-    * **Fase de Grupos:** Equipes divididas em Grupo A e Grupo B. Jogam todos contra todos dentro do grupo em Set Único de 25 pontos.
-    * **Classificação:** Os 2 melhores de cada grupo avançam para as Semifinais.
-    * **Critérios de Desempate:** 1º Vitórias, 2º Saldo de Pontos, 3º Confronto Direto.
+    * Fase de Grupos: Set Único de 25 pontos. 2 melhores de cada grupo avançam.
     """)
 
 with aba2:
@@ -68,23 +60,46 @@ with aba2:
     
     if st.session_state.chaves:
         col_a, col_b = st.columns(2)
+        
         with col_a:
-            st.subheader("🔥 Grupo A")
-            st.table(pd.DataFrame({"Equipe": st.session_state.chaves["Grupo A"]}))
-            st.write("**Confrontos sugeridos:**")
+            st.markdown("""
+                <div style="background-color: #004a99; color: white; padding: 10px; border-radius: 10px 10px 0 0; text-align: center; font-weight: bold;">
+                    GRUPO A
+                </div>
+            """, unsafe_allow_html=True)
+            for t in st.session_state.chaves["Grupo A"]:
+                st.markdown(f"""
+                    <div style="border: 1px solid #ddd; padding: 10px; border-top: none; background-color: white; color: black;">
+                        🏐 {t}
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.write("---")
+            st.write("**🎮 Jogos do Grupo A:**")
             equipes_a = st.session_state.chaves["Grupo A"]
             for i in range(len(equipes_a)):
                 for j in range(i + 1, len(equipes_a)):
-                    st.write(f"🎮 {equipes_a[i]} vs {equipes_a[j]}")
+                    st.code(f"{equipes_a[i]} vs {equipes_a[j]}")
 
         with col_b:
-            st.subheader("🔥 Grupo B")
-            st.table(pd.DataFrame({"Equipe": st.session_state.chaves["Grupo B"]}))
-            st.write("**Confrontos sugeridos:**")
+            st.markdown("""
+                <div style="background-color: #d9534f; color: white; padding: 10px; border-radius: 10px 10px 0 0; text-align: center; font-weight: bold;">
+                    GRUPO B
+                </div>
+            """, unsafe_allow_html=True)
+            for t in st.session_state.chaves["Grupo B"]:
+                st.markdown(f"""
+                    <div style="border: 1px solid #ddd; padding: 10px; border-top: none; background-color: white; color: black;">
+                        🏐 {t}
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.write("---")
+            st.write("**🎮 Jogos do Grupo B:**")
             equipes_b = st.session_state.chaves["Grupo B"]
             for i in range(len(equipes_b)):
                 for j in range(i + 1, len(equipes_b)):
-                    st.write(f"🎮 {equipes_b[i]} vs {equipes_b[j]}")
+                    st.code(f"{equipes_b[i]} vs {equipes_b[j]}")
     else:
         st.warning("O sorteio ainda não foi realizado.")
 
@@ -92,17 +107,16 @@ with aba3:
     st.header("Caminho até o Título (Mata-Mata)")
     st.markdown("""
     <div style="display: flex; justify-content: space-around; align-items: center; background-color: #f0f2f6; padding: 20px; border-radius: 10px; color: black;">
-        <div>
-            <h4>SEMIFINAIS</h4>
-            <div style="border: 2px solid #004a99; padding: 10px; margin: 10px; background: white;">1º Grupo A vs 2º Grupo B</div>
-            <div style="border: 2px solid #004a99; padding: 10px; margin: 10px; background: white;">1º Grupo B vs 2º Grupo A</div>
+        <div style="flex: 1; text-align: center;">
+            <h4 style="color: #333;">SEMIFINAIS</h4>
+            <div style="border: 2px solid #004a99; padding: 10px; margin: 10px; background: white; border-radius: 5px;">1º Grupo A<br>vs<br>2º Grupo B</div>
+            <div style="border: 2px solid #004a99; padding: 10px; margin: 10px; background: white; border-radius: 5px;">1º Grupo B<br>vs<br>2º Grupo A</div>
         </div>
-        <div style="font-size: 30px;">➡️</div>
-        <div>
-            <h4>FINAL</h4>
-            <div style="border: 3px solid #ffd700; padding: 10px; background: white; font-weight: bold;">Vencedores Semi</div>
+        <div style="font-size: 40px; color: #333;">➡️</div>
+        <div style="flex: 1; text-align: center;">
+            <h4 style="color: #333;">FINAL</h4>
+            <div style="border: 4px solid #ffd700; padding: 20px; background: white; font-weight: bold; border-radius: 10px;">🏆 VENCEDORES SEMI</div>
         </div>
-        <div style="font-size: 30px;">🏆</div>
     </div>
     """, unsafe_allow_html=True)
 
