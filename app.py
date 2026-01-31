@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 
-# 1. Configurações Iniciais
+# 1. Configurações Iniciais conforme o PDF
 st.set_page_config(page_title="I Torneio RS/SC de Vôlei", page_icon="🏐", layout="wide")
 
 if 'times' not in st.session_state: st.session_state.times = []
@@ -31,19 +31,20 @@ if is_admin:
         if st.button("🗑️ Resetar Tudo"):
             st.session_state.times=[]; st.session_state.chaves=None; st.rerun()
 
-# 3. Abas com as Regras do PDF
-t1, t2, t3, t4 = st.tabs(["📜 Regulamento Técnico", "🚫 Federados", "📊 Chaves e Jogos", "🏆 Premiação"])
+# 3. Abas com as Regras Oficiais do PDF
+t1, t2, t3, t4, t5 = st.tabs(["📜 Regulamento", "🚫 Federados", "📊 Chaves", "🏆 Mata-Mata", "🏅 Premiação"])
 
 with t1:
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(f"**🗓 DATA:** 22 de fevereiro de 2026\n\n**📍 LOCAL:** Escola Sagrado\n\n**🕗 INÍCIO:** 08:00h")
-    with col2:
-        st.markdown(f"**💰 INSCRIÇÃO:** R$ 400,00\n\n**🏐 BOLA:** Penalty 8.0\n\n**👤 ORGANIZAÇÃO:** Cristiano Delfino")
+    st.markdown("### 📍 Informações Gerais")
+    st.write("📅 **Data:** 22 de fevereiro de 2026")
+    st.write("🏫 **Local:** Escola Sagrado - Torres/RS")
+    st.write("🕗 **Início:** 08:00h (Tolerância 10 min na 1ª partida)")
+    st.write("🏐 **Bola Oficial:** Penalty 8.0")
     
     st.divider()
-    st.markdown("""
-    ### Principais Regras:
-    * **Equipes:** Até 12 atletas inscritos.
-    * **Fases:** Classificatória, Quartas e Semis em **Set Único de 25 pontos**.
-    * **F
+    st.markdown("### ⚙️ Regras Técnicas")
+    st.write("- **Inscrição:** Até 12 atletas por equipe.")
+    st.write("- **Sets:** Único de 25 pontos (Classificatória, Quartas e Semis).")
+    st.write("- **Final:** Disputa de 1º, 2º e 3º em Melhor de 3 Sets.")
+    st.write("- **Tempos:** 2 tempos técnicos por set.")
+    st.write("- **Aquecimento:** 6 min na primeira partida de cada time.")
