@@ -8,26 +8,26 @@ st.set_page_config(page_title="Torneio RS/SC Vôlei", page_icon="🏐", layout="
 if 'times' not in st.session_state: st.session_state.times = []
 if 'chaves' not in st.session_state: st.session_state.chaves = None
 
-# Texto do Regulamento (Separado para não quebrar o código)
-TEXTO_REGULAMENTO = """
+# Texto do Regulamento Detalhado
+TEXTO_REG = """
 ### 1. DA ORGANIZAÇÃO
-O **I Torneio RS/SC de Vôlei** é organizado por **Cristiano Delfino**, visando integrar atletas do RS e SC.
+Torneio organizado por **Cristiano Delfino** para integração RS/SC.
 
-### 2. DAS EQUIPES E ATLETAS
-* **Misto:** Mínimo de 2 mulheres em quadra o tempo todo.
-* **Inscritos:** Mínimo 6 e máximo 12 atletas por equipe.
+### 2. DAS EQUIPES
+* Mínimo de 6 e máximo de 12 atletas.
+* **Misto:** Pelo menos 2 mulheres em quadra.
 
-### 3. DO FORMATO DE DISPUTA
-* **Fase de Grupos:** Set Único de 25 pontos (máximo 27).
-* **Classificação:** Os 2 melhores de cada grupo avançam.
+### 3. DO FORMATO
+* Set Único de 25 pontos (teto de 27).
+* 2 melhores de cada grupo avançam.
 
 ### 4. CRITÉRIOS DE DESEMPATE
-1. Vitórias | 2. Saldo de pontos | 3. Confronto direto.
+1º Vitórias | 2º Saldo de pontos | 3º Confronto direto.
 
 ### 5. LOCAL E HORÁRIO
 * **Data:** 29 de Março de 2026.
-* **Local:** Ginásio Municipal de Torres - RS.
-* **Início:** 08:00h pontualmente (Check-in 07:30h).
+* **Local:** Torres - RS.
+* **Início:** 08:00h (Check-in 07:30h).
 """
 
 # Esconder barra lateral para o público
@@ -48,5 +48,11 @@ if is_admin:
         st.divider()
         if st.button("🎲 REALIZAR SORTEIO"):
             if len(st.session_state.times) >= 4:
-                lista = st.session_state.times.copy()
-                random.shuffle(
+                lista = list(st.session_state.times)
+                random.shuffle(lista)
+                meio = len(lista)//2
+                st.session_state.chaves = {"A": lista[:meio], "B": lista[meio:]}
+                st.snow()
+                st.rerun()
+            else:
+                st.error("Adicione pelo menos
