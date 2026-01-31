@@ -43,7 +43,7 @@ with aba1:
     st.markdown("### 📍 Informações Gerais")
     st.info("Data: 22 de Fevereiro de 2026 | Local: Escola Sagrado (Torres/RS) | Início: 08:00h")
     st.write("• Inscrição: R$ 400,00 | Pix: (51) 99881-6326 (Cristiano Delfino)")
-    st.write("• Bola Oficial: Penalty 8.0 (Não disponibilizamos bolas para aquecimento)")
+    st.write("• Bola Oficial: Penalty 8.0")
     st.divider()
     st.markdown("### ⚙️ Regulamento Técnico")
     st.write("• Fase Classificatória, Quartas e Semifinais: Set único de 25 pontos.")
@@ -91,3 +91,4 @@ with aba4:
 
 st.divider()
 st.caption("Organização: Cristiano Delfino | Desenvolvido por Gabriel")
+
