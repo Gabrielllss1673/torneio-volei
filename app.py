@@ -1,20 +1,18 @@
 import streamlit as st
 import random
 
-# 1. Configurações Iniciais
 st.set_page_config(page_title="Torneio RS/SC Vôlei", page_icon="🏐", layout="wide")
 
 if 'times' not in st.session_state: st.session_state.times = []
 if 'chaves' not in st.session_state: st.session_state.chaves = None
 
-# Acesso Secreto
+# Acesso Secreto (?modo=cristiano)
 is_admin = st.query_params.get("modo") == "cristiano"
 if not is_admin:
     st.markdown("<style>[data-testid='stSidebar']{display:none!important;}</style>", unsafe_allow_html=True)
 
 st.title("🏐 I Torneio RS/SC de Vôlei")
 
-# 2. Painel Administrativo
 if is_admin:
     with st.sidebar:
         st.header("🏁 Admin")
@@ -30,38 +28,39 @@ if is_admin:
         if st.button("🗑️ Reset"):
             st.session_state.times=[]; st.session_state.chaves=None; st.rerun()
 
-# 3. Abas de Conteúdo
-t1, t2, t3, t4 = st.tabs(["📜 Regulamento", "❓ Dúvidas (FAQ)", "📊 Grupos", "🏆 Mata-Mata"])
+# 3. Abas de Conteúdo (Adicionada aba Federados)
+t1, t2, t3, t4, t5 = st.tabs(["📜 Regulamento", "🚫 Federados", "❓ Dúvidas", "📊 Grupos", "🏆 Mata-Mata"])
 
 with t1:
     st.header("Regulamento Oficial")
     st.markdown("""
-    **1. ORGANIZAÇÃO** Organizado por **Cristiano Delfino** para integração entre RS e SC.
-    
-    **2. EQUIPES E ATLETAS** * Mínimo 6 e máximo 12 atletas por equipe.
-    * **Misto:** Obrigatório mínimo de 2 mulheres em quadra.
-    
-    **3. FORMATO DE JOGO** * Set Único de 25 pontos (com teto de 27).
-    * Vitória: 3 pts | Derrota: 0 pts.
-    * Avançam os 2 melhores de cada grupo.
-    
-    **4. DATA E LOCAL** * **Data:** 29 de Março de 2026.
-    * **Local:** Ginásio Municipal de Torres - RS.
-    * **Início:** 08:00h (Check-in às 07:30h).
+    **Organização:** Cristiano Delfino | **Local:** Torres - RS.
+    * **Misto:** Mínimo de 2 mulheres em quadra.
+    * **Jogos:** Set Único de 25 pontos (teto de 27).
+    * **Início:** 08:00h pontualmente.
     """)
 
 with t2:
-    st.header("Dúvidas Frequentes")
-    with st.expander("Pode jogar com mais de 2 mulheres?"):
-        st.write("Sim! O regulamento exige o *mínimo* de 2. O time pode ser todo feminino se desejarem.")
-    with st.expander("O que acontece em caso de atraso?"):
-        st.write("Tolerância de 10 minutos apenas para o primeiro jogo. Atrasos maiores resultam em W.O. (25x0).")
-    with st.expander("Como funciona o desempate no grupo?"):
-        st.write("1º Vitórias, 2º Saldo de Pontos, 3º Confronto Direto, 4º Sorteio.")
-    with st.expander("Pode trocar jogador durante o dia?"):
-        st.write("Não. Apenas atletas que assinaram a súmula no início do torneio podem jogar.")
+    st.header("Regras para Atletas Federados")
+    st.warning("Para garantir o nível amador do torneio, aplicam-se as seguintes regras:")
+    st.markdown("""
+    * **Definição:** Considera-se 'Federado' o atleta que disputou campeonatos oficiais por federações estaduais nos últimos 2 anos.
+    * **Limite por Equipe:** Cada equipe poderá ter no máximo **2 atletas federados** inscritos.
+    * **Em Quadra:** Apenas **1 atleta federado** pode estar em quadra por vez (não podem jogar dois federados juntos).
+    * **Penalidade:** O uso de atletas federados acima do limite resultará em desclassificação imediata da equipe.
+    """)
+    st.info("Caso haja dúvida sobre a condição de um atleta, a organização deve ser consultada antes do início do torneio.")
 
 with t3:
+    st.header("Dúvidas Frequentes")
+    with st.expander("Pode jogar com mais de 2 mulheres?"):
+        st.write("Sim! O mínimo é 2, mas pode jogar com 3, 4 ou mais.")
+    with st.expander("O que acontece em caso de atraso?"):
+        st.write("Tolerância de 10 minutos apenas no primeiro jogo. Depois é W.O.")
+    with st.expander("Substituição de atletas?"):
+        st.write("Somente atletas que assinaram a súmula no início do dia podem participar.")
+
+with t4:
     st.header("Distribuição dos Grupos")
     ca, cb = st.columns(2)
     with ca:
@@ -73,7 +72,7 @@ with t3:
         tb = st.session_state.chaves["B"] if st.session_state.chaves else ["Aguardando..."]*4
         for t in tb: st.info(f"🏐 {t}")
 
-with t4:
+with t5:
     st.header("Chaveamento Mata-Mata")
     st.markdown("""
     <div style="background:#f0f2f6;padding:20px;border-radius:10px;text-align:center;color:black;">
