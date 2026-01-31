@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 
-# 1. Configurações Iniciais conforme o PDF
+# 1. Configurações Iniciais
 st.set_page_config(page_title="I Torneio RS/SC de Vôlei", page_icon="🏐", layout="wide")
 
 if 'times' not in st.session_state: st.session_state.times = []
@@ -39,12 +39,12 @@ with t1:
     st.write("📅 **Data:** 22 de fevereiro de 2026")
     st.write("🏫 **Local:** Escola Sagrado - Torres/RS")
     st.write("🕗 **Início:** 08:00h (Tolerância 10 min na 1ª partida)")
-    st.write("🏐 **Bola Oficial:** Penalty 8.0")
-    
     st.divider()
     st.markdown("### ⚙️ Regras Técnicas")
-    st.write("- **Inscrição:** Até 12 atletas por equipe.")
-    st.write("- **Sets:** Único de 25 pontos (Classificatória, Quartas e Semis).")
-    st.write("- **Final:** Disputa de 1º, 2º e 3º em Melhor de 3 Sets.")
-    st.write("- **Tempos:** 2 tempos técnicos por set.")
-    st.write("- **Aquecimento:** 6 min na primeira partida de cada time.")
+    st.write("• **Sets:** Único de 25 pontos (Classificatória, Quartas e Semis).")
+    st.write("• **Final:** Melhor de 3 Sets (1º, 2º e 3º lugares).")
+    st.write("• **Tempos:** 2 tempos técnicos por set.")
+    st.write("• **Aquecimento:** 6 min na primeira partida (3' ponta, 2' saída, 1' saque).")
+
+with t2:
+    st.header("Regra para Atletas Federados
