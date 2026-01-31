@@ -1,58 +1,62 @@
 import streamlit as st
 import random
-import time
 
-# 1. Configuração e Estilo
-st.set_page_config(page_title="Torneio RS/SC Vôlei", page_icon="🏐", layout="wide")
+st.set_page_config(page_title="Torneio RS/SC", page_icon="🏐", layout="wide")
 
 if 'times' not in st.session_state: st.session_state.times = []
 if 'chaves' not in st.session_state: st.session_state.chaves = None
 
-# Texto do Regulamento Detalhado
-TEXTO_REG = """
-### 1. DA ORGANIZAÇÃO
-Torneio organizado por **Cristiano Delfino** para integração RS/SC.
-
-### 2. DAS EQUIPES
-* Mínimo de 6 e máximo de 12 atletas.
-* **Misto:** Pelo menos 2 mulheres em quadra.
-
-### 3. DO FORMATO
-* Set Único de 25 pontos (teto de 27).
-* 2 melhores de cada grupo avançam.
-
-### 4. CRITÉRIOS DE DESEMPATE
-1º Vitórias | 2º Saldo de pontos | 3º Confronto direto.
-
-### 5. LOCAL E HORÁRIO
-* **Data:** 29 de Março de 2026.
-* **Local:** Torres - RS.
-* **Início:** 08:00h (Check-in 07:30h).
-"""
-
-# Esconder barra lateral para o público
 is_admin = st.query_params.get("modo") == "cristiano"
 if not is_admin:
-    st.markdown("<style>[data-testid='stSidebar'] {display:none!important;}</style>", unsafe_allow_html=True)
+    st.markdown("<style>[data-testid='stSidebar']{display:none!important;}</style>", unsafe_allow_html=True)
 
 st.title("🏐 I Torneio RS/SC de Vôlei")
 
-# 2. Painel Administrativo
 if is_admin:
     with st.sidebar:
-        st.header("🏁 Painel do Cristiano")
-        nt = st.text_input("Nome do Novo Time")
-        if st.button("➕ Adicionar Time") and nt:
-            st.session_state.times.append(nt)
-            st.rerun()
-        st.divider()
-        if st.button("🎲 REALIZAR SORTEIO"):
-            if len(st.session_state.times) >= 4:
-                lista = list(st.session_state.times)
-                random.shuffle(lista)
-                meio = len(lista)//2
-                st.session_state.chaves = {"A": lista[:meio], "B": lista[meio:]}
-                st.snow()
-                st.rerun()
-            else:
-                st.error("Adicione pelo menos
+        st.header("🏁 Admin")
+        nt = st.text_input("Time")
+        if st.button("➕ Add") and nt:
+            st.session_state.times.append(nt); st.rerun()
+        if st.button("🎲 SORTEAR") and len(st.session_state.times) >= 2:
+            lst = list(st.session_state.times); random.shuffle(lst)
+            m = len(lst)//2
+            st.session_state.chaves = {"A": lst[:m], "B": lst[m:]}
+            st.snow(); st.rerun()
+        if st.button("🗑️ Reset"):
+            st.session_state.times=[]; st.session_state.chaves=None; st.rerun()
+
+tab1, tab2, tab3 = st.tabs(["📜 Regulamento", "📊 Grupos", "🏆 Mata-Mata"])
+
+with tab1:
+    st.markdown("""
+    ### Regulamento Detalhado
+    **1. Organização:** Cristiano Delfino.
+    **2. Local:** Torres - RS | **Data:** 29/03/2026.
+    **3. Regras:** Misto (min. 2 mulheres). Set único de 25 pts.
+    **4. Avançam:** Os 2 melhores de cada grupo para a semi.
+    """)
+
+with tab2:
+    ca, cb = st.columns(2)
+    with ca:
+        st.markdown('<div style="background:#004a99;color:white;padding:5px;text-align:center;">GRUPO A</div>', unsafe_allow_html=True)
+        ta = st.session_state.chaves["A"] if st.session_state.chaves else ["Aguardando..."]*4
+        for t in ta: st.info(f"🏐 {t}")
+    with cb:
+        st.markdown('<div style="background:#d9534f;color:white;padding:5px;text-align:center;">GRUPO B</div>', unsafe_allow_html=True)
+        tb = st.session_state.chaves["B"] if st.session_state.chaves else ["Aguardando..."]*4
+        for t in tb: st.info(f"🏐 {t}")
+
+with tab3:
+    st.markdown("""
+    <div style="background:#f0f2f6;padding:20px;border-radius:10px;text-align:center;color:black;">
+    <h4>SEMIFINAIS</h4>
+    <p>1º A vs 2º B  |  1º B vs 2º A</p>
+    <hr>
+    <h4>🏆 FINAL</h4>
+    <p>Vencedores das Semis</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.caption("Org: Cristiano Delfino | Desenvolvido por Gabriel")
