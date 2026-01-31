@@ -1,63 +1,66 @@
 import streamlit as st
 import random
 import time
+import pandas as pd
 
 # Configuração da página
 st.set_page_config(page_title="Torneio RS/SC Vôlei", page_icon="🏐", layout="wide")
 
 # Inicialização do banco de dados temporário
 if 'times' not in st.session_state:
-    st.session_state.times = ["Time A", "Time B", "Time C", "Time D", "Time E", "Time F", "Time G", "Time H"]
+    st.session_state.times = []
 if 'chaves' not in st.session_state:
     st.session_state.chaves = None
 
-# Título e Cabeçalho
 st.title("🏐 I Torneio RS/SC de Vôlei")
 
 # --- SENHA NA BARRA LATERAL ---
 with st.sidebar:
-    st.header("🔐 Admin")
-    senha = st.text_input("Senha para editar", type="password")
+    st.header("🔐 Administração")
+    senha = st.text_input("Senha do Organizador", type="password")
     admin_logado = (senha == "volei123")
     
     if admin_logado:
-        st.success("Modo Edição Ativo")
+        st.success("Acesso Liberado!")
+        st.divider()
         novo_time = st.text_input("Nome do Time")
         if st.button("➕ Cadastrar"):
-            st.session_state.times.append(novo_time)
-            st.rerun()
+            if novo_time and novo_time not in st.session_state.times:
+                st.session_state.times.append(novo_time)
+                st.rerun()
     else:
         st.info("Visualização Pública")
 
 # --- CRIAÇÃO DAS ABAS ---
-aba1, aba2, aba3 = st.tabs(["📜 Regulamento", "🎲 Sorteio & Grupos", "🏆 Mata-Mata"])
+aba1, aba2, aba3 = st.tabs(["📜 Regulamento Detalhado", "📊 Grupos & Confrontos", "🏆 Mata-Mata"])
 
 with aba1:
-    st.header("Informações Gerais")
-    col_inf1, col_inf2 = st.columns(2)
-    with col_inf1:
-        st.markdown(f"""
-        **📅 Data:** 29 de Março de 2026  
-        **📍 Local:** Ginásio Municipal de Torres - RS  
-        **⏰ Início:** 08:00h
-        """)
-    with col_inf2:
-        st.markdown("""
-        **🏐 Modalidade:** Vôlei Misto  
-        **🏆 Premiação:** Troféu + Medalhas
-        """)
-    
-    st.divider()
-    st.header("📋 Regulamento Resumido")
-    st.write("""
-    1. Cada equipe deve ter no mínimo 6 jogadores em quadra.
-    2. Partidas da primeira fase: Set único de 25 pontos.
-    3. Semifinais e Final: Melhor de 3 sets (25, 25, tie-break 15).
-    4. Tolerância de atraso: 10 minutos.
+    st.header("Regulamento Oficial")
+    st.markdown("""
+    ### 1. DA ORGANIZAÇÃO
+    O I Torneio RS/SC de Vôlei é organizado por **Cristiano Delfino**, visando a integração entre atletas dos estados do Rio Grande do Sul e Santa Catarina.
+
+    ### 2. DAS EQUIPES E ATLETAS
+    * Cada equipe deve inscrever no mínimo 6 e no máximo 12 atletas.
+    * O torneio é de categoria **Mista**. É obrigatória a presença de pelo menos 2 mulheres em quadra durante todo o tempo de jogo.
+    * Uniformização: É recomendado o uso de camisetas da mesma cor para a equipe.
+
+    ### 3. DO SISTEMA DE DISPUTA
+    * **Fase de Grupos:** As equipes serão divididas em Grupo A e Grupo B. Jogam todos contra todos dentro do grupo em Set Único de 25 pontos (máximo 27 em caso de empate).
+    * **Classificação:** Os 2 melhores de cada grupo avançam para as Semifinais.
+    * **Critérios de Desempate:** 1º Vitórias, 2º Saldo de Pontos, 3º Confronto Direto.
+
+    ### 4. PONTUAÇÃO E ARBITRAGEM
+    * A arbitragem será composta por membros da organização e voluntários capacitados.
+    * Discussões com a arbitragem podem acarretar em cartão amarelo (advertência) ou vermelho (expulsão do set).
+
+    ### 5. LOCAL E HORÁRIO
+    * **Endereço:** Ginásio Municipal de Torres - RS.
+    * **Horário de Chegada:** 07:30h para confirmação de súmula.
     """)
 
 with aba2:
-    st.header("Chaveamento da Primeira Fase")
+    st.header("Distribuição dos Grupos")
     
     if admin_logado:
         if st.button("🎲 REALIZAR SORTEIO AGORA"):
@@ -65,44 +68,24 @@ with aba2:
                 time.sleep(2)
                 lista = st.session_state.times.copy()
                 random.shuffle(lista)
-                metade = len(lista) // 2
-                st.session_state.chaves = {"Grupo A": lista[:metade], "Grupo B": lista[metade:]}
+                # Divisão balanceada
+                meio = len(lista) // 2
+                st.session_state.chaves = {"Grupo A": lista[:meio], "Grupo B": lista[meio:]}
                 st.snow()
     
     if st.session_state.chaves:
-        c1, c2 = st.columns(2)
-        with c1:
+        col_a, col_b = st.columns(2)
+        with col_a:
             st.subheader("🔥 Grupo A")
-            for t in st.session_state.chaves["Grupo A"]:
-                st.info(f"🏐 {t}")
-        with c2:
+            df_a = pd.DataFrame({"Equipe": st.session_state.chaves["Grupo A"]})
+            st.table(df_a)
+            st.markdown("**Possíveis Confrontos (Grupo A):**")
+            for i in range(len(st.session_state.chaves["Grupo A"])):
+                for j in range(i + 1, len(st.session_state.chaves["Grupo A"])):
+                    st.write(f"🎮 {st.session_state.chaves['Grupo A'][i]} vs {st.session_state.chaves['Grupo A'][j]}")
+
+        with col_b:
             st.subheader("🔥 Grupo B")
-            for t in st.session_state.chaves["Grupo B"]:
-                st.info(f"🏐 {t}")
-    else:
-        st.warning("As chaves ainda não foram sorteadas pelo organizador.")
-
-with aba3:
-    st.header("Fase Final (Mata-Mata)")
-    if st.session_state.chaves:
-        st.write("O cruzamento será entre os melhores de cada grupo.")
-        
-        # Desenho visual do Mata-Mata
-        col_m1, col_m2, col_m3 = st.columns(3)
-        with col_m1:
-            st.subheader("Semifinais")
-            st.code(f"1º Grupo A  vs  2º Grupo B")
-            st.code(f"1º Grupo B  vs  2º Grupo A")
-        
-        with col_m2:
-            st.subheader("Final")
-            st.code("Vencedor Semi 1\n      vs\nVencedor Semi 2")
-            
-        with col_m3:
-            st.subheader("🏆 Campeão")
-            st.write("❓ Aguardando jogos...")
-    else:
-        st.info("O mata-mata será liberado após a definição dos grupos.")
-
-st.markdown("---")
-st.caption("Organização: Cristiano Delfino | Desenvolvido por Gabriel")
+            df_b = pd.DataFrame({"Equipe": st.session_state.chaves["Grupo B"]})
+            st.table(df_b)
+            st.markdown("**Poss
