@@ -2,95 +2,79 @@ import streamlit as st
 import random
 import time
 
-# 1. Configuração Inicial
+# 1. Configuração e Estilo
 st.set_page_config(page_title="Torneio RS/SC Vôlei", page_icon="🏐", layout="wide")
 
-# Inicialização de dados
-if 'times' not in st.session_state:
-    st.session_state.times = []
-if 'chaves' not in st.session_state:
-    st.session_state.chaves = None
+if 'times' not in st.session_state: st.session_state.times = []
+if 'chaves' not in st.session_state: st.session_state.chaves = None
 
-# 2. Sistema de Acesso Secreto (?modo=cristiano)
+# Esconder barra lateral para o público
 is_admin = st.query_params.get("modo") == "cristiano"
-
-# FORÇAR A BARRA LATERAL A SUMIR PARA O PÚBLICO
 if not is_admin:
-    st.markdown("""
-        <style>
-            [data-testid="stSidebar"], section[data-testid="stSidebar"] {
-                display: none !important;
-                width: 0px !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+    st.markdown("<style>[data-testid='stSidebar'] {display:none!important;}</style>", unsafe_allow_html=True)
 
 st.title("🏐 I Torneio RS/SC de Vôlei")
 
-# 3. Painel do Organizador
+# 2. Painel Administrativo
 if is_admin:
     with st.sidebar:
-        st.header("🏁 Painel do Cristiano")
-        novo_time = st.text_input("Nome do Time")
-        if st.button("➕ Cadastrar Time"):
-            if novo_time:
-                st.session_state.times.append(novo_time)
-                st.rerun()
-        
-        st.divider()
-        if st.button("🎲 REALIZAR SORTEIO"):
-            if len(st.session_state.times) >= 4:
-                lista = st.session_state.times.copy()
-                random.shuffle(lista)
-                meio = len(lista) // 2
-                st.session_state.chaves = {"A": lista[:meio], "B": lista[meio:]}
-                st.snow()
-                st.rerun()
-        
-        if st.button("🗑️ Resetar Tudo"):
-            st.session_state.times = []
-            st.session_state.chaves = None
+        st.header("🏁 Organizador")
+        nt = st.text_input("Novo Time")
+        if st.button("➕ Adicionar") and nt:
+            st.session_state.times.append(nt)
             st.rerun()
+        if st.button("🎲 SORTEAR") and len(st.session_state.times) >= 4:
+            lista = st.session_state.times.copy()
+            random.shuffle(lista)
+            m = len(lista)//2
+            st.session_state.chaves = {"A": lista[:m], "B": lista[m:]}
+            st.snow()
+            st.rerun()
+        if st.button("🗑️ Resetar"):
+            st.session_state.times = []; st.session_state.chaves = None; st.rerun()
 
-# 4. Conteúdo Público (Abas)
-aba1, aba2, aba3 = st.tabs(["📜 Regulamento Detalhado", "📊 Grupos & Confrontos", "🏆 Mata-Mata"])
+# 3. Conteúdo das Abas
+aba1, aba2, aba3 = st.tabs(["📜 Regulamento", "📊 Grupos", "🏆 Mata-Mata"])
 
 with aba1:
-    st.header("Regulamento Oficial do Torneio")
+    st.header("Regulamento Oficial")
     st.markdown("""
-    ### 1. DA ORGANIZAÇÃO E OBJETIVO
-    O **I Torneio RS/SC de Vôlei**, idealizado por **Cristiano Delfino**, busca integrar atletas e promover o esporte entre as regiões litorâneas dos dois estados.
-
-    ### 2. DAS EQUIPES E INSCRIÇÕES
-    * **Composição:** Mínimo de 6 e máximo de 12 atletas por equipe.
-    * **Categoria Mista:** É obrigatória a manutenção de, no mínimo, 2 mulheres em quadra durante todos os ralis.
-    * **Identificação:** Equipes devem, preferencialmente, utilizar uniformes de cores similares.
-
-    ### 3. FORMATO DE DISPUTA
-    * **Fase de Grupos:** As equipes serão divididas por sorteio em Grupo A e Grupo B.
-    * **Partidas:** Set único de 25 pontos (com teto de 27). 
-    * **Pontuação:** Vitória vale 3 pontos, derrota vale 0.
-    * **Classificação:** Avançam para a semifinal os 2 melhores colocados de cada grupo.
-
-    ### 4. CRITÉRIOS DE DESEMPATE
-    1. Número de vitórias.
-    2. Saldo de pontos (pontos feitos menos pontos sofridos).
-    3. Confronto direto.
-    4. Sorteio.
-
-    ### 5. LOCAL E HORÁRIOS
-    * **Data:** 29 de Março de 2026.
-    * **Local:** Ginásio Municipal de Torres - RS.
-    * **Abertura:** 07:30h para conferência de documentos.
-    * **Início dos Jogos:** 08:00h pontualmente.
+    **Organização:** Cristiano Delfino | **Local:** Torres - RS
+    
+    1. **Misto:** Mínimo de 2 mulheres em quadra.
+    2. **Jogos:** Set único de 25 pontos.
+    3. **Classificação:** Top 2 de cada grupo avançam.
+    4. **Horário:** Chegada às 07:30h, início às 08:00h.
     """)
 
 with aba2:
     st.header("Distribuição dos Grupos")
-    col_a, col_b = st.columns(2)
-    
-    with col_a:
-        st.markdown('<div style="background-color:#004a99;color:white;padding:10px;border-radius:10px 10px 0 0;text-align:center;font-weight:bold;">GRUPO A</div>', unsafe_allow_html=True)
-        times_a = st.session_state.chaves["A"] if st.session_state.chaves else ["Aguardando Sorteio..."]*4
-        for t in times_a:
-            st.markdown(f'<div style="border:1px solid #ddd;padding:10px;background:white;color:black;">🏐 {t}</div>', unsafe_allow_html=
+    ca, cb = st.columns(2)
+    with ca:
+        st.markdown('<div style="background:#004a99;color:white;padding:10px;text-align:center;font-weight:bold;">GRUPO A</div>', unsafe_allow_html=True)
+        ta = st.session_state.chaves["A"] if st.session_state.chaves else ["Aguardando..."]*4
+        for t in ta:
+            st.markdown(f'<div style="border:1px solid #ddd;padding:10px;background:white;color:black;">🏐 {t}</div>', unsafe_allow_html=True)
+    with cb:
+        st.markdown('<div style="background:#d9534f;color:white;padding:10px;text-align:center;font-weight:bold;">GRUPO B</div>', unsafe_allow_html=True)
+        tb = st.session_state.chaves["B"] if st.session_state.chaves else ["Aguardando..."]*4
+        for t in tb:
+            st.markdown(f'<div style="border:1px solid #ddd;padding:10px;background:white;color:black;">🏐 {t}</div>', unsafe_allow_html=True)
+
+with aba3:
+    st.header("Chaveamento Final")
+    st.markdown("""
+    <div style="display:flex;justify-content:space-around;align-items:center;background:#f0f2f6;padding:20px;border-radius:10px;color:black;">
+        <div style="text-align:center;"><b>SEMIFINAIS</b>
+            <div style="border:1px solid #004a99;padding:10px;margin:5px;background:white;">1º A vs 2º B</div>
+            <div style="border:1px solid #004a99;padding:10px;margin:5px;background:white;">1º B vs 2º A</div>
+        </div>
+        <div style="font-size:30px;">➡️</div>
+        <div style="text-align:center;"><b>FINAL</b>
+            <div style="border:3px solid #ffd700;padding:15px;background:white;font-weight:bold;">🏆 GRANDE FINAL</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.divider()
+st.caption("Organização: Cristiano Delfino | Desenvolvido por Gabriel")
