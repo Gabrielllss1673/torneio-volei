@@ -2,101 +2,96 @@ import streamlit as st
 import random
 import time
 
-st.set_page_config(page_title="Torneio RS/SC Vôlei", layout="wide", page_icon="🏐")
+# Configuração da página
+st.set_page_config(page_title="Torneio RS/SC Vôlei", page_icon="🏐", layout="wide")
 
-# --- MEMÓRIA DO APP ---
-if 'inscritos' not in st.session_state:
-    st.session_state.inscritos = []
-if 'chave_a' not in st.session_state:
-    st.session_state.chave_a = []
-if 'chave_b' not in st.session_state:
-    st.session_state.chave_b = []
+# Estilo para as bolinhas de vôlei caírem
+def animacao_volei():
+    # O Streamlit usa o 'snow' para flocos de neve, mas vamos usar emojis de vôlei no lugar
+    st.markdown("""
+        <style>
+        .vball { font-size: 25px; }
+        </style>
+    """, unsafe_allow_html=True)
+    st.snow() # Isso gera a animação de queda
 
-# --- CABEÇALHO ---
-st.markdown("<h1 style='text-align: center; color: #1E3A8A;'>🏐 I TORNEIO RS / SC DE VÔLEI</h1>", unsafe_allow_html=True)
-st.write("---")
+# Inicialização do banco de dados temporário
+if 'times' not in st.session_state:
+    st.session_state.times = []
+if 'chaves' not in st.session_state:
+    st.session_state.chaves = None
 
-aba = st.sidebar.radio("Navegação", ["Inscrições", "Sorteio ao Vivo", "Regulamento Completo"])
+st.title("🏐 I Torneio RS/SC de Vôlei")
+st.subheader("Sistema Oficial de Sorteio e Chaves")
 
-if aba == "Inscrições":
-    st.header("📝 Cadastro de Equipes")
-    with st.form("cadastro", clear_on_submit=True):
-        nome = st.text_input("Nome da Equipe:")
-        if st.form_submit_button("✅ Confirmar"):
-            if nome:
-                st.session_state.inscritos.append(nome)
-                st.toast(f"{nome} inscrito!", icon="🏐")
+# --- ÁREA LATERAL (SEGURANÇA) ---
+with st.sidebar:
+    st.header("🔐 Administração")
+    # A senha que você vai usar. Pode mudar se quiser!
+    senha = st.text_input("Senha do Organizador", type="password")
+    
+    admin_logado = (senha == "volei123")
 
-    st.subheader("📋 Lista de Confirmados")
-    for i, t in enumerate(st.session_state.inscritos):
-        c1, c2 = st.columns([5, 1])
-        c1.markdown(f"**{i+1}.** {t}")
-        if c2.button("🗑️", key=f"del_{i}"):
-            st.session_state.inscritos.pop(i)
-            st.rerun()
-
-elif aba == "Sorteio ao Vivo":
-    st.header("🎲 Sorteio de Chaves")
-    if len(st.session_state.inscritos) < 2:
-        st.warning("Adicione times para sortear.")
+    if admin_logado:
+        st.success("Acesso Liberado!")
+        st.divider()
+        novo_time = st.text_input("Nome do Novo Time")
+        if st.button("➕ Adicionar Time"):
+            if novo_time and novo_time not in st.session_state.times:
+                st.session_state.times.append(novo_time)
+                st.rerun()
     else:
-        if st.button("🔥 INICIAR SORTEIO"):
-            lista = st.session_state.inscritos.copy()
-            random.shuffle(lista)
-            meio = len(lista) // 2
-            st.session_state.chave_a = lista[:meio]
-            st.session_state.chave_b = lista[meio:]
-            st.balloons()
-    
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.success("🟡 CHAVE A")
-        for t in st.session_state.chave_a: st.write(f"🏐 {t}")
-    with col_b:
-        st.info("🔵 CHAVE B")
-        for t in st.session_state.chave_b: st.write(f"🏐 {t}")
+        if senha != "":
+            st.error("Senha incorreta")
+        st.info("Digite a senha para gerenciar os times.")
 
-elif aba == "Regulamento Completo":
-    st.header("📜 Regulamento Oficial 2026")
-    
-    col_reg1, col_reg2 = st.columns(2)
-    
-    with col_reg1:
-        st.subheader("📍 Informações Gerais")
-        st.write("🗓️ **Data:** 29 de Março de 2026")
-        st.write("⏰ **Início:** 08:30h")
-        st.write("📍 **Local:** Escola Sagrado - Torres/RS")
-        st.write("💰 **Inscrição:** R$ 400,00 por equipe")
-        st.write("📞 **Organização:** Cristiano Delfino")
-        
-    with col_reg2:
-        st.subheader("🏐 Formato da Competição")
-        st.markdown("""
-        * **Equipes:** Máximo de 12 atletas inscritos.
-        * **Chaves:** 2 Grupos (A e B) sorteados ao vivo.
-        * **Classificação:** Os 4 melhores de cada chave avançam.
-        * **Bola Oficial:** Penalty 8.0.
-        """)
+# --- TELA PRINCIPAL ---
+col1, col2 = st.columns(2)
 
-    st.write("---")
-    st.subheader("⏱️ Regras de Jogo (Sets e Pontuação)")
+with col1:
+    st.header("📋 Times Inscritos")
+    if not st.session_state.times:
+        st.write("Nenhum time cadastrado.")
+    else:
+        for i, time_nome in enumerate(st.session_state.times, 1):
+            st.write(f"{i}. {time_nome}")
+
+with col2:
+    st.header("🎲 Sorteio das Chaves")
     
-    # Criando uma tabela para ficar bem visual
-    dados_regras = {
-        "Fase": ["Classificatória", "Quartas de Final", "Semifinais", "Grande Final"],
-        "Formato": ["Set Único", "Set Único", "Set Único", "Melhor de 3 Sets"],
-        "Pontuação": ["25 pontos", "25 pontos", "25 pontos", "21/21/15 pontos"],
-        "Observação": ["Mínimo 2 pts de diferença", "Mínimo 2 pts de diferença", "Mínimo 2 pts de diferença", "Tie-break se necessário"]
-    }
-    st.table(dados_regras)
+    if admin_logado:
+        if len(st.session_state.times) >= 4:
+            if st.button("REALIZAR SORTEIO AO VIVO!"):
+                with st.spinner('Embaralhando os times...'):
+                    time.sleep(2)
+                    lista_sorteio = st.session_state.times.copy()
+                    random.shuffle(lista_sorteio)
+                    
+                    # Divide em dois grupos (exemplo simples)
+                    metade = len(lista_sorteio) // 2
+                    st.session_state.chaves = {
+                        "Grupo A": lista_sorteio[:metade],
+                        "Grupo B": lista_sorteio[metade:]
+                    }
+                    animacao_volei() # Chama as bolinhas de vôlei!
+                    st.success("Sorteio Realizado!")
+        else:
+            st.warning("Cadastre pelo menos 4 times para sortear.")
+    else:
+        st.info("Aguardando o organizador realizar o sorteio...")
 
-    with st.expander("🔍 Detalhes sobre Substituições e Líbero"):
-        st.write("""
-        * **Substituições:** Até 6 substituições por set.
-        * **Líbero:** Cada equipe pode atuar com até 2 líberos inscritos.
-        * **Atrasos:** Tolerância de 15 minutos apenas para o primeiro jogo do dia.
-        * **Uniformes:** Equipes devem estar devidamente uniformizadas e numeradas.
-        """)
+# Exibição das Chaves
+if st.session_state.chaves:
+    st.divider()
+    c1, c2 = st.columns(2)
+    with c1:
+        st.subheader("🔥 Grupo A")
+        for t in st.session_state.chaves["Grupo A"]:
+            st.info(t)
+    with c2:
+        st.subheader("🔥 Grupo B")
+        for t in st.session_state.chaves["Grupo B"]:
+            st.info(t)
 
-st.sidebar.markdown("---")
-st.sidebar.caption("🚀 I Torneio RS/SC de Vôlei")
+st.markdown("---")
+st.caption("Organização: Cristiano Delfino | Desenvolvido por Gabriel")
