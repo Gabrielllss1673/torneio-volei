@@ -5,21 +5,29 @@ import time
 # 1. Configuração Inicial
 st.set_page_config(page_title="Torneio RS/SC Vôlei", page_icon="🏐", layout="wide")
 
+# Inicialização de dados
 if 'times' not in st.session_state:
     st.session_state.times = []
 if 'chaves' not in st.session_state:
     st.session_state.chaves = None
 
-# 2. Sistema de Acesso Secreto
-# Use ?modo=cristiano no final da URL para abrir o painel
+# 2. Sistema de Acesso Secreto (?modo=cristiano)
 is_admin = st.query_params.get("modo") == "cristiano"
 
+# FORÇAR A BARRA LATERAL A SUMIR PARA O PÚBLICO
 if not is_admin:
-    st.markdown("<style>[data-testid='stSidebar'] {display: none !important;}</style>", unsafe_allow_html=True)
+    st.markdown("""
+        <style>
+            [data-testid="stSidebar"], section[data-testid="stSidebar"] {
+                display: none !important;
+                width: 0px !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
 
 st.title("🏐 I Torneio RS/SC de Vôlei")
 
-# 3. Painel do Organizador (Só aparece com o link secreto)
+# 3. Painel do Organizador
 if is_admin:
     with st.sidebar:
         st.header("🏁 Painel do Cristiano")
@@ -45,17 +53,36 @@ if is_admin:
             st.rerun()
 
 # 4. Conteúdo Público (Abas)
-aba1, aba2, aba3 = st.tabs(["📜 Regulamento", "📊 Grupos", "🏆 Mata-Mata"])
+aba1, aba2, aba3 = st.tabs(["📜 Regulamento Detalhado", "📊 Grupos & Confrontos", "🏆 Mata-Mata"])
 
 with aba1:
-    st.header("Regulamento Oficial")
+    st.header("Regulamento Oficial do Torneio")
     st.markdown("""
-    **Organização:** Cristiano Delfino  
-    **Data:** 29 de Março de 2026  
-    **Local:** Ginásio Municipal de Torres - RS  
-    
-    * Partidas em Set Único de 25 pontos.
-    * Mínimo 2 mulheres em quadra (Misto).
+    ### 1. DA ORGANIZAÇÃO E OBJETIVO
+    O **I Torneio RS/SC de Vôlei**, idealizado por **Cristiano Delfino**, busca integrar atletas e promover o esporte entre as regiões litorâneas dos dois estados.
+
+    ### 2. DAS EQUIPES E INSCRIÇÕES
+    * **Composição:** Mínimo de 6 e máximo de 12 atletas por equipe.
+    * **Categoria Mista:** É obrigatória a manutenção de, no mínimo, 2 mulheres em quadra durante todos os ralis.
+    * **Identificação:** Equipes devem, preferencialmente, utilizar uniformes de cores similares.
+
+    ### 3. FORMATO DE DISPUTA
+    * **Fase de Grupos:** As equipes serão divididas por sorteio em Grupo A e Grupo B.
+    * **Partidas:** Set único de 25 pontos (com teto de 27). 
+    * **Pontuação:** Vitória vale 3 pontos, derrota vale 0.
+    * **Classificação:** Avançam para a semifinal os 2 melhores colocados de cada grupo.
+
+    ### 4. CRITÉRIOS DE DESEMPATE
+    1. Número de vitórias.
+    2. Saldo de pontos (pontos feitos menos pontos sofridos).
+    3. Confronto direto.
+    4. Sorteio.
+
+    ### 5. LOCAL E HORÁRIOS
+    * **Data:** 29 de Março de 2026.
+    * **Local:** Ginásio Municipal de Torres - RS.
+    * **Abertura:** 07:30h para conferência de documentos.
+    * **Início dos Jogos:** 08:00h pontualmente.
     """)
 
 with aba2:
@@ -64,11 +91,6 @@ with aba2:
     
     with col_a:
         st.markdown('<div style="background-color:#004a99;color:white;padding:10px;border-radius:10px 10px 0 0;text-align:center;font-weight:bold;">GRUPO A</div>', unsafe_allow_html=True)
-        times_a = st.session_state.chaves["A"] if st.session_state.chaves else ["Aguardando..."]*4
+        times_a = st.session_state.chaves["A"] if st.session_state.chaves else ["Aguardando Sorteio..."]*4
         for t in times_a:
-            st.markdown(f'<div style="border:1px solid #ddd;padding:10px;background:white;color:black;">🏐 {t}</div>', unsafe_allow_html=True)
-
-    with col_b:
-        st.markdown('<div style="background-color:#d9534f;color:white;padding:10px;border-radius:10px 10px 0 0;text-align:center;font-weight:bold;">GRUPO B</div>', unsafe_allow_html=True)
-        times_b = st.session_state.chaves["B"] if st.session_state.chaves else ["Aguardando..."]*4
-        for
+            st.markdown(f'<div style="border:1px solid #ddd;padding:10px;background:white;color:black;">🏐 {t}</div>', unsafe_allow_html=
