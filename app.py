@@ -1,8 +1,8 @@
 import streamlit as st
 import random
 
-# 1. Configurações
-st.set_page_config(page_title="I Torneio RS/SC", page_icon="🏐", layout="wide")
+# 1. Configurações Iniciais
+st.set_page_config(page_title="I Torneio RS/SC de Vôlei", page_icon="🏐", layout="wide")
 
 if 'times' not in st.session_state: st.session_state.times = []
 if 'chaves' not in st.session_state: st.session_state.chaves = None
@@ -13,7 +13,7 @@ if not is_admin:
     st.markdown("<style>[data-testid='stSidebar']{display:none!important;}</style>", unsafe_allow_html=True)
 
 st.title("🏐 I TORNEIO RS / SC de VÔLEI")
-st.write("Torneio Aberto Masculino de Quadra - Realização: Cristiano Delfino")
+st.subheader("Unindo estados, celebrando o vôlei!")
 
 # 2. Painel Admin
 if is_admin:
@@ -30,45 +30,39 @@ if is_admin:
         if st.button("🗑️ Resetar"):
             st.session_state.times=[]; st.session_state.chaves=None; st.rerun()
 
-# 3. Abas Fixas (Informações do PDF)
-t1, t2, t3, t4, t5 = st.tabs(["📜 Regras", "🚫 Federados", "📊 Chaves", "🏆 Mata-Mata", "🏅 Prêmios"])
+# 3. Abas Detalhadas
+t1, t2, t3, t4, t5 = st.tabs(["📜 Regulamento Completo", "🚫 Atletas Federados", "📊 Chaves", "🏆 Caminho da Glória", "🎁 Premiação VIP"])
 
 with t1:
-    st.info("📅 22/02/2026 | 🏫 Escola Sagrado | 🕗 08:00h")
-    st.markdown("**Regulamento:**")
-    st.write("- Set único de 25 pontos (Classificatória até Semis).")
-    st.write("- Finais (1º, 2º e 3º) em Melhor de 3 Sets.")
-    st.write("- Inscrição: R$ 400,00 | Bola: Penalty 8.0")
+    st.markdown("### 📋 Regulamento Técnico Oficial")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.info("📅 **DATA:** 22 de fevereiro de 2026\n\n🏫 **LOCAL:** Escola Sagrado (Torres/RS)\n\n🕗 **INÍCIO:** 08:00h (Tolerância 10 min na 1ª partida)")
+    with col2:
+        st.success("💰 **INSCRIÇÃO:** R$ 400,00 (PIX: 51 99881-6326)\n\n🏐 **BOLA:** Penalty 8.0\n\n📝 **EQUIPES:** Até 12 atletas (inc. Líbero)")
+
+    st.markdown("""
+    **1. Formato das Partidas:**
+    * Fase Classificatória, Quartas e Semis: **Set Único de 25 pontos**.
+    * Grande Final e 3º Lugar: **Melhor de 3 Sets**.
+    
+    **2. Dinâmica de Jogo:**
+    * Regras oficiais da CBV com adaptações.
+    * 6 substituições por set e 2 tempos técnicos por set.
+    * Aquecimento: 6 minutos em quadra para o primeiro jogo de cada time.
+    * Início com 6 atletas em quadra (sistema 3x3 ou 6x0 conforme nível).
+    """)
 
 with t2:
-    st.header("Atletas Federados")
-    st.warning("⚠️ LIMITE: Apenas 1 (um) atleta federado por equipe.")
-    st.write("O torneio mantém caráter amador e recreativo conforme item 1.5.")
+    st.header("🛡️ Política de Atletas Federados")
+    st.warning("O I Torneio RS/SC preza pelo equilíbrio técnico e o espírito recreativo.")
+    st.markdown("""
+    **Conforme o item 1.5 do regulamento:**
+    * **O que é federado?** Atleta com registro ativo em federações profissionais.
+    * **Limite:** É permitido apenas **1 (um) atleta federado** por equipe.
+    * **Objetivo:** Garantir que o torneio continue sendo uma celebração amadora, onde todos tenham chances reais de disputa.
+    * **Fiscalização:** A escalação de mais de um federado implica em desclassificação imediata.
+    """)
 
 with t3:
-    st.header("Chaves do Torneio")
-    ca, cb = st.columns(2)
-    with ca:
-        st.markdown('<p style="background:#004a99;color:white;text-align:center;">CHAVE A</p>', unsafe_allow_html=True)
-        ta = st.session_state.chaves["A"] if st.session_state.chaves else ["Aguardando Sorteio..."]*4
-        for t in ta: st.info(t)
-    with cb:
-        st.markdown('<p style="background:#d9534f;color:white;text-align:center;">CHAVE B</p>', unsafe_allow_html=True)
-        tb = st.session_state.chaves["B"] if st.session_state.chaves else ["Aguardando Sorteio..."]*4
-        for t in tb: st.info(t)
-
-with t4:
-    st.header("Mata-Mata (Quartas de Final)")
-    st.write("1º Chave A x 4º Chave B")
-    st.write("2º Chave A x 3º Chave B")
-    st.write("1º Chave B x 4º Chave A")
-    st.write("2º Chave B x 3º Chave A")
-    
-
-with t5:
-    st.header("Premiação")
-    st.write("🥇 1º, 🥈 2º e 🥉 3º: Troféus e Medalhas.")
-    st.divider()
-    st.write("🏅 Destaques: Levantador, Oposto, Ponteiro, Central e Líbero.")
-
-st.caption("Org: Cristiano Delfino | Desenvolvido por Gabriel")
+    st.header("📊 Chaves de Classificação")
